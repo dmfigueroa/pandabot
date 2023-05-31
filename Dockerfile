@@ -2,7 +2,7 @@ FROM node:20
 
 WORKDIR /usr/src/app
 
-RUN curl -f https://get.pnpm.io/v8.4.0.js | node - add --global pnpm
+RUN curl -fsSL https://get.pnpm.io/install.sh | sh -
 
 COPY package.json pnpm-lock.yaml ./
 
