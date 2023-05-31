@@ -8,7 +8,7 @@
     "start:dev": "nodemon",
     "build": "tsc",
     "generate": "drizzle-kit generate:sqlite --out migrations --schema src/database.ts",
-    "migrate": "pnpm run generate && node --loader ts-node/esm migrate.ts"
+    "migrate": "yarn generate && node --loader ts-node/esm migrate.ts"
   },
   "keywords": [],
   "author": "",
