@@ -1,49 +1,65 @@
-import { spawn } from "node:child_process";
+import dotenv from "dotenv";
+import db, { access } from "./database.js";
+import { sigedInEmmiter } from "./server.js";
+import { eq } from "drizzle-orm";
 
-export const permissions = [
-  "chat:read",
-  "chat:edit",
-  "channel:moderate",
-  "moderator:manage:banned_users",
-];
+dotenv.config();
+
+const hostname = process.env.HOSTNAME;
 
 export const getToken = async () => {
-  let messages = "";
+  let tokens = db.select().from(access).all();
 
-  const args = ["token", "-u", "-s", permissions.join(" ")];
+  if (tokens.length === 0) {
+    console.log(`Open ${hostname}/auth/twitch to sign in`);
+    return new Promise<string>((resolve) => {
+      sigedInEmmiter.once("signed-in", async () => {
+        tokens = db.select().from(access).all();
 
-  const child = spawn("twitch", args, { stdio: "pipe" });
-
-  child.stdout.on("data", (data) => (messages += data.toString()));
-  child.stderr.on("data", (data) => (messages += data.toString()));
-
-  return new Promise(
-    (
-      resolve: (value: { token: string; refreshToken: string }) => void,
-      reject
-    ) => {
-      child.on("exit", (code) => {
-        if (code !== 0)
-          return reject(new Error(`Process exited with code ${code}`));
-
-        const token = messages
-          .split("\n")
-          .find((message) => message.includes("User Access Token:"))
-          ?.split(" ")
-          .at(-1);
-
-        const refreshToken = messages
-          .split("\n")
-          .find((message) => message.includes("Refresh Token:"))
-          ?.split(" ")
-          .at(-1);
-
-        if (!token || !refreshToken) return reject(new Error("No token found"));
-
-        resolve({ token, refreshToken });
+        resolve(tokens[0].access_token);
       });
+    });
+  }
+  const access_credentials = tokens[0];
+
+  console.log(access_credentials.expires_in, Date.now());
+  if (access_credentials.expires_in < Date.now()) {
+    await refreshTokens(access_credentials.refresh_token);
+  }
+  return access_credentials.access_token;
+};
+
+const refreshTokens = async (refreshToken: string) => {
+  const clientId = process.env.TWITCH_BOT_CLIENT_ID;
+  const clientSecret = process.env.TWITCH_BOT_CLIENT_SECRET;
+
+  const params = new URLSearchParams({
+    client_id: clientId,
+    client_secret: clientSecret,
+    grant_type: "refresh_token",
+    refresh_token: refreshToken,
+  });
+
+  const response = await fetch(
+    `https://id.twitch.tv/oauth2/token?${params.toString()}`,
+    {
+      method: "POST",
     }
   );
+
+  if (!response.ok) {
+    throw new Error("No se pudo obtener el token OAuth2");
+  }
+
+  const data = await response.json();
+
+  await updateCredentials({
+    accesToken: data.access_token,
+    refreshToken: data.refresh_token,
+    expires_in: data.expires_in,
+  });
+
+  return data.access_token;
 };
 
 export const authenticatedFetch = async (
@@ -62,4 +78,24 @@ export const authenticatedFetch = async (
   }
 
   return fetch(url, options);
+};
+
+export const updateCredentials = async ({
+  accesToken,
+  refreshToken,
+  expires_in: expiresIn,
+}) => {
+  // Fisrt acces element from db
+  const access_credentials = db.select().from(access).all()[0];
+
+  db.update(access)
+    .set({
+      access_token: accesToken,
+      refresh_token: refreshToken,
+      expires_in: Date.now() + expiresIn * 1000,
+    })
+    .where(eq(access.id, access_credentials.id))
+    .run();
+
+  sigedInEmmiter.emit("signed-in");
 };

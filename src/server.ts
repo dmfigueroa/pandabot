@@ -1,15 +1,22 @@
+import dotenv from "dotenv";
+import EventEmitter from "events";
 import express from "express";
+import { updateCredentials } from "./get-token.js";
 
+dotenv.config();
 const app = express();
+
+export const sigedInEmmiter = new EventEmitter();
+
+const REDIRECT_URI = process.env.HOSTNAME + "/auth/callback";
 
 // Endpoint para redirigir al usuario al autenticador de Twitch
 app.get("/auth/twitch", (_req, res) => {
   const clientId = process.env.TWITCH_BOT_CLIENT_ID;
-  const redirectUri = process.env.REDIRECT_URI;
 
   const params = new URLSearchParams({
     client_id: clientId,
-    redirect_uri: redirectUri,
+    redirect_uri: REDIRECT_URI,
     response_type: "code",
     scope: "chat:read chat:edit channel:moderate moderator:manage:banned_users",
   });
@@ -19,9 +26,8 @@ app.get("/auth/twitch", (_req, res) => {
 
 // Endpoint para recibir el token OAuth2
 app.get("/auth/callback", async (req, res) => {
-  const clientId = process.env.CLIENT_ID;
-  const clientSecret = process.env.CLIENT_SECRET;
-  const redirectUri = process.env.REDIRECT_URI;
+  const clientId = process.env.TWITCH_BOT_CLIENT_ID;
+  const clientSecret = process.env.TWITCH_BOT_CLIENT_SECRET;
   const code = req.query.code as string;
 
   const params = new URLSearchParams({
@@ -29,7 +35,7 @@ app.get("/auth/callback", async (req, res) => {
     client_secret: clientSecret,
     code,
     grant_type: "authorization_code",
-    redirect_uri: redirectUri,
+    redirect_uri: REDIRECT_URI,
   });
 
   try {
@@ -46,8 +52,11 @@ app.get("/auth/callback", async (req, res) => {
 
     const data = await response.json();
 
-    const accessToken = data.access_token;
-    const refreshToken = data.refresh_token;
+    await updateCredentials({
+      accesToken: data.access_token,
+      refreshToken: data.refresh_token,
+      expires_in: data.expires_in,
+    });
 
     // Aquí puedes hacer lo que desees con el token de acceso y el token de actualización
     // Por ejemplo, puedes almacenarlos en una base de datos o utilizarlos para autenticar al usuario

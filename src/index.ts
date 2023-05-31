@@ -9,9 +9,12 @@ dotenv.config();
 console.log("Bot is starting");
 
 console.log("Starting Credentials server");
-app.listen(process.env.PORT ?? port, () =>
-  console.log("Credentials server is running")
-);
+await new Promise((resolve) => {
+  app.listen(process.env.PORT ?? port, () => {
+    console.log("Credentials server is running");
+    resolve(null);
+  });
+});
 
 const client = new Client({
   channels: ["mikiimoonlight"],
@@ -21,13 +24,13 @@ const client = new Client({
   },
   identity: {
     username: "soywarmon",
-    password: (await getToken()).token,
+    password: await getToken(),
   },
 });
 
 console.log("API Client is starting");
 
-const exclude = ["mikiimoonlight", "soywarmon", "streamelements"];
+const exclude = ["mikiimoonlight", "streamelements"];
 
 client.connect().catch(console.error);
 
