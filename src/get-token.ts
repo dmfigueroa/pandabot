@@ -22,7 +22,6 @@ export const getToken = async () => {
   }
   const access_credentials = tokens[0];
 
-  console.log(access_credentials.expires_in, Date.now());
   if (access_credentials.expires_in < Date.now()) {
     await refreshTokens(access_credentials.refresh_token);
   }
