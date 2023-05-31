@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "nodemon --esm src/index.ts"
+    "start": "node dist/index.js",
+    "start:dev": "nodemon",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
