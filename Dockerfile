@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 RUN curl -f https://get.pnpm.io/v8.4.0.js | node - add --global pnpm
 
-COPY .npmrc package.json pnpm-lock.yaml .pnpmfile.cjs ./
+COPY package.json pnpm-lock.yaml ./
 
 RUN pnpm install --frozen-lockfile --prod
 RUN pnpm migrate
