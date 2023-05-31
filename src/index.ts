@@ -2,10 +2,16 @@ import dotenv from "dotenv";
 import { Client } from "tmi.js";
 import { saysPanda } from "./say-panda.js";
 import { getToken } from "./get-token.js";
+import app, { port } from "./server.js";
 
 dotenv.config();
 
 console.log("Bot is starting");
+
+console.log("Starting Credentials server");
+app.listen(process.env.PORT ?? port, () =>
+  console.log("Credentials server is running")
+);
 
 const client = new Client({
   channels: ["mikiimoonlight"],

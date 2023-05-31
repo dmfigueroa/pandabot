@@ -1,6 +1,4 @@
 import { spawn } from "node:child_process";
-import { RefreshingAuthProvider } from "@twurple/auth";
-import { promises as fs } from "fs";
 
 export const permissions = [
   "chat:read",
