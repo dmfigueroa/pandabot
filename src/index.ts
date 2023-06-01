@@ -10,7 +10,7 @@ console.log("Bot is starting");
 
 console.log("Starting Credentials server");
 await new Promise((resolve) => {
-  app.listen(process.env.PORT ?? port, () => {
+  app.listen(Number(process.env.PORT) ?? port, "0.0.0.0", null, () => {
     console.log("Credentials server is running");
     resolve(null);
   });
