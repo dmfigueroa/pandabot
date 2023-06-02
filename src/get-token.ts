@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
+import { eq } from "drizzle-orm";
 import db, { access } from "./database.js";
 import { sigedInEmmiter } from "./server.js";
-import { eq } from "drizzle-orm";
 
 dotenv.config();
 
@@ -87,14 +87,24 @@ export const updateCredentials = async ({
   // Fisrt acces element from db
   const access_credentials = db.select().from(access).all()[0];
 
-  db.update(access)
-    .set({
-      access_token: accesToken,
-      refresh_token: refreshToken,
-      expires_in: Date.now() + expiresIn * 1000,
-    })
-    .where(eq(access.id, access_credentials.id))
-    .run();
+  if (!access_credentials) {
+    db.insert(access)
+      .values({
+        access_token: accesToken,
+        refresh_token: refreshToken,
+        expires_in: Date.now() + expiresIn * 1000,
+      })
+      .run();
+  } else {
+    db.update(access)
+      .set({
+        access_token: accesToken,
+        refresh_token: refreshToken,
+        expires_in: Date.now() + expiresIn * 1000,
+      })
+      .where(eq(access.id, access_credentials.id))
+      .run();
+  }
 
   sigedInEmmiter.emit("signed-in");
 };
