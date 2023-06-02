@@ -8,7 +8,7 @@ const app = express();
 
 export const sigedInEmmiter = new EventEmitter();
 
-const REDIRECT_URI = process.env.HOSTNAME + "/auth/callback";
+const REDIRECT_URI = process.env.HOSTNAME_URL + "/auth/callback";
 
 // Endpoint para redirigir al usuario al autenticador de Twitch
 app.get("/auth/twitch", (_req, res) => {

@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 
 dotenv.config();
 
-const hostname = process.env.HOSTNAME;
+const hostname = process.env.HOSTNAME_URL;
 
 export const getToken = async () => {
   let tokens = db.select().from(access).all();
