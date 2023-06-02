@@ -8,6 +8,15 @@ const app = express();
 
 export const sigedInEmmiter = new EventEmitter();
 
+const scopes = [
+  "chat:read",
+  "chat:edit",
+  "channel:moderate",
+  "channel:manage:moderators",
+  "moderator:manage:banned_users",
+  "user:read:email",
+];
+
 const REDIRECT_URI = process.env.HOSTNAME_URL + "/auth/callback";
 
 // Endpoint para redirigir al usuario al autenticador de Twitch
@@ -18,7 +27,7 @@ app.get("/auth/twitch", (_req, res) => {
     client_id: clientId,
     redirect_uri: REDIRECT_URI,
     response_type: "code",
-    scope: "chat:read chat:edit channel:moderate moderator:manage:banned_users",
+    scope: scopes.join(" "),
   });
 
   res.redirect(`https://id.twitch.tv/oauth2/authorize?${params.toString()}`);
