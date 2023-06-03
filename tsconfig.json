@@ -13,5 +13,6 @@
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node"
-  }
+  },
+  "skipLibCheck": true
 }

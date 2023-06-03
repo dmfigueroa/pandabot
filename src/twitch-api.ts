@@ -49,8 +49,6 @@ export const banUser = async (
     }
   );
 
-  console.log(await response.json());
-
   if (!response.ok) {
     return false;
   }

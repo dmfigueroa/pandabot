@@ -36,7 +36,7 @@ const client = new Client({
   },
   identity: {
     username: "soywarmon",
-    password: await getToken(),
+    password: getToken,
   },
 });
 
