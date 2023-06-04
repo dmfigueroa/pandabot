@@ -5,5 +5,5 @@
  * @returns {boolean} - Returns true if the text contains all of the specified words, otherwise false.
  */
 export const hasAllText = (text, words) => {
-  return words.every((word) => text.toLowerCase().includes(word));
+  return words.every((word) => text.toLowerCase().includes(word.toLowerCase()));
 };

@@ -7,7 +7,7 @@
     "start": "node src/index.js",
     "start:dev": "nodemon",
     "generate": "drizzle-kit generate:sqlite --out migrations --schema src/database.js",
-    "migrate": "yarn generate && node migrate.js"
+    "migrate": "node ./migrate.js"
   },
   "keywords": [],
   "author": "",
