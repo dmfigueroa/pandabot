@@ -1,15 +1,15 @@
-FROM node:18-alpine
+FROM node:20
 
 WORKDIR /usr/src/app
 
-COPY package.json yarn.lock ./
+RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -
 
-RUN yarn install --frozen-lockfile
+COPY package.json pnpm-lock.yaml ./
+
+RUN pnpm install --frozen-lockfile --prod
+RUN pnpm migrate
 
 COPY . .
 
-RUN yarn migrate
-
 EXPOSE 3000
-
-CMD [ "yarn", "start" ]
+CMD [ "pnpm", "start" ]
