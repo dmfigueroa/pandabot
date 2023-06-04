@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import EventEmitter from "events";
 import express from "express";
-import { updateCredentials } from "./get-token.js";
+import { updateCredentials } from "./get-token.mjs";
 
 dotenv.config();
 const app = express();
@@ -24,7 +24,7 @@ app.get("/auth/twitch", (_req, res) => {
   const clientId = process.env.TWITCH_BOT_CLIENT_ID;
 
   const params = new URLSearchParams({
-    client_id: clientId,
+    client_id: clientId || "",
     redirect_uri: REDIRECT_URI,
     response_type: "code",
     scope: scopes.join(" "),
@@ -37,15 +37,19 @@ app.get("/auth/twitch", (_req, res) => {
 app.get("/auth/callback", async (req, res) => {
   const clientId = process.env.TWITCH_BOT_CLIENT_ID;
   const clientSecret = process.env.TWITCH_BOT_CLIENT_SECRET;
-  const code = req.query.code as string;
+  const code = req.query.code;
 
-  const params = new URLSearchParams({
-    client_id: clientId,
-    client_secret: clientSecret,
-    code,
-    grant_type: "authorization_code",
-    redirect_uri: REDIRECT_URI,
-  });
+  if (!code || typeof code !== "string") {
+    res.status(400).send("Código de autorización no válido");
+    return;
+  }
+
+  const params = new URLSearchParams();
+  params.append("client_id", clientId ?? "");
+  params.append("client_secret", clientSecret ?? "");
+  params.append("code", code);
+  params.append("grant_type", "authorization_code");
+  params.append("redirect_uri", REDIRECT_URI);
 
   try {
     const response = await fetch(

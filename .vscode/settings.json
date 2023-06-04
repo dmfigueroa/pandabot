@@ -8,5 +8,6 @@
       "name": "Cual Panda DB",
       "database": "${workspaceFolder:cual-panda-bot}/sqlite.db"
     }
-  ]
+  ],
+  "js/ts.implicitProjectConfig.checkJs": true
 }

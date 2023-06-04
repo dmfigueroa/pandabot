@@ -10,9 +10,15 @@ const hostname = process.env.HOSTNAME_URL;
 export const getToken = async () => {
   let tokens = db.select().from(access).all();
 
-  if (tokens.length === 0) {
+  const access_credentials = tokens[0];
+
+  if (
+    !access_credentials ||
+    !access_credentials.access_token ||
+    !access_credentials.refresh_token
+  ) {
     console.log(`Open ${hostname}/auth/twitch to sign in`);
-    return new Promise<string>((resolve) => {
+    return new Promise((resolve) => {
       sigedInEmmiter.once("signed-in", async () => {
         tokens = db.select().from(access).all();
 
@@ -20,24 +26,30 @@ export const getToken = async () => {
       });
     });
   }
-  const access_credentials = tokens[0];
 
-  if (access_credentials.expires_in < Date.now()) {
+  if (
+    !access_credentials.expires_in ||
+    access_credentials.expires_in < Date.now()
+  ) {
     await refreshTokens(access_credentials.refresh_token);
   }
   return access_credentials.access_token;
 };
 
-const refreshTokens = async (refreshToken: string) => {
+/**
+ * Refreshes the access token using the provided refresh token.
+ * @param {string} refreshToken - The refresh token to use for refreshing the access token.
+ * @returns {Promise<string>} - A promise that resolves with the new access token.
+ */
+const refreshTokens = async (refreshToken) => {
   const clientId = process.env.TWITCH_BOT_CLIENT_ID;
   const clientSecret = process.env.TWITCH_BOT_CLIENT_SECRET;
 
-  const params = new URLSearchParams({
-    client_id: clientId,
-    client_secret: clientSecret,
-    grant_type: "refresh_token",
-    refresh_token: refreshToken,
-  });
+  const params = new URLSearchParams();
+  params.append("client_id", clientId ?? "");
+  params.append("client_secret", clientSecret ?? "");
+  params.append("grant_type", "refresh_token");
+  params.append("refresh_token", refreshToken);
 
   const response = await fetch(
     `https://id.twitch.tv/oauth2/token?${params.toString()}`,
@@ -61,11 +73,14 @@ const refreshTokens = async (refreshToken: string) => {
   return data.access_token;
 };
 
-export const authenticatedFetch = async (
-  url: string,
-  token: string,
-  options: RequestInit & { params?: URLSearchParams }
-) => {
+/**
+ * Sends an authenticated HTTP request to the specified URL using the provided access token.
+ * @param {string} url - The URL to send the request to.
+ * @param {string} token - The access token to use for authentication.
+ * @param {object} options - Additional options to include in the request (e.g. headers, body, etc.).
+ * @returns {Promise<Response>} - A promise that resolves with the response from the server.
+ */
+export const authenticatedFetch = async (url, token, options) => {
   const headers = new Headers();
   headers.append("Authorization", `Bearer ${token}`);
   headers.append("Client-ID", process.env.TWITCH_BOT_CLIENT_ID ?? "");
@@ -79,11 +94,19 @@ export const authenticatedFetch = async (
   return fetch(url, options);
 };
 
-export const updateCredentials = async ({
+/**
+ * Updates the access and refresh tokens in the database with the provided values.
+ * @param {object} credentials - An object containing the new access and refresh tokens, and the expiration time of the access token.
+ * @param {string} credentials.accesToken - The new access token.
+ * @param {string} credentials.refreshToken - The new refresh token.
+ * @param {number} credentials.expires_in - The expiration time of the access token, in seconds.
+ * @returns {Promise<void>} - A promise that resolves when the tokens have been updated in the database.
+ */
+export async function updateCredentials({
   accesToken,
   refreshToken,
   expires_in: expiresIn,
-}) => {
+}) {
   // Fisrt acces element from db
   const access_credentials = db.select().from(access).all()[0];
 
@@ -107,4 +130,4 @@ export const updateCredentials = async ({
   }
 
   sigedInEmmiter.emit("signed-in");
-};
+}

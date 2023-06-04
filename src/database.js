@@ -1,9 +1,9 @@
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
-import { drizzle, BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 
 const sqlite = new Database("sqlite.db");
-const db: BetterSQLite3Database = drizzle(sqlite);
+const db = drizzle(sqlite);
 
 export const access = sqliteTable("access", {
   id: integer("id").primaryKey(),

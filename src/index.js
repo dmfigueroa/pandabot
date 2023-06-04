@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { Client } from "tmi.js";
 import { banPoli, isBanPoli } from "./ban-poli.js";
-import { getToken } from "./get-token.js";
+import { getToken } from "./get-token.mjs";
 import { saysPanda } from "./say-panda.js";
 import app, { port } from "./server.js";
 
@@ -11,7 +11,7 @@ console.log("Bot is starting");
 
 console.log("Starting Credentials server");
 await new Promise((resolve) => {
-  app.listen(Number(process.env.PORT) ?? port, "0.0.0.0", null, () => {
+  app.listen(Number(process.env.PORT) ?? port, "0.0.0.0", 0, () => {
     console.log("Credentials server is running");
     resolve(null);
   });
@@ -65,7 +65,12 @@ client.on("message", async (channel, tags, message, self) => {
   }
 });
 
-const isExcluded = (username: string | undefined) => {
+/**
+ * Checks if a username is excluded from bot commands.
+ * @param {string | undefined} username - The username to check.
+ * @returns {boolean} - True if the username is excluded, false otherwise.
+ */
+const isExcluded = (username) => {
   if (!username) {
     return false;
   }

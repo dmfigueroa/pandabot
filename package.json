@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "node src/index.js",
     "start:dev": "nodemon",
-    "build": "tsc",
-    "generate": "drizzle-kit generate:sqlite --out migrations --schema src/database.ts",
-    "migrate": "yarn generate && node --loader ts-node/esm migrate.ts"
+    "generate": "drizzle-kit generate:sqlite --out migrations --schema src/database.js",
+    "migrate": "yarn generate && node migrate.js"
   },
   "keywords": [],
   "author": "",
