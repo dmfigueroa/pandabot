@@ -3,7 +3,7 @@ import { Client } from "tmi.js";
 import { banPoli, isBanPoli } from "./ban-poli.js";
 import { getToken } from "./get-token.mjs";
 import { saysPanda } from "./say-panda.js";
-import app, { port } from "./server.js";
+import app, { port, sigedInEmmiter } from "./server.js";
 
 dotenv.config();
 
@@ -11,8 +11,13 @@ console.log("Bot is starting");
 
 console.log("Starting Credentials server");
 await new Promise((resolve) => {
-  app.listen(Number(process.env.PORT) ?? port, "0.0.0.0", 0, () => {
+  app.listen(Number(process.env.PORT) ?? port, "0.0.0.0", 0, async () => {
     console.log("Credentials server is running");
+    if (!(await getToken())) {
+      sigedInEmmiter.once("signed-in", async () => {
+        resolve(null);
+      });
+    }
     resolve(null);
   });
 });
