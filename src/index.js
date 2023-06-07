@@ -21,10 +21,17 @@ export const channels = {
   mikiimoonlight: {
     isPoliMod: false,
     broadcasterId: "808750879",
+    features: ["cualPanda", "banPoli"],
   },
   soywarmon: {
     isPoliMod: true,
     broadcasterId: "54643022",
+    features: ["cualPanda", "banPoli"],
+  },
+  cymaniatico: {
+    isPoliMod: false,
+    broadcasterId: "12823826",
+    features: ["banPoli"],
   },
 };
 
@@ -49,12 +56,19 @@ client.connect().catch(console.error);
 console.log("Bot is running");
 
 client.on("message", async (channel, tags, message, self) => {
+  const trimmedChannel = channel.replace("#", "");
   if (self || isExcluded(tags.username)) return;
-  if (saysPanda(message)) {
+  if (
+    channels[trimmedChannel]?.features.includes("cualPanda") &&
+    saysPanda(message)
+  ) {
     client.say(channel, `@${tags.username} Cuál Panda?`);
   }
-  if (isBanPoli(message)) {
-    const trimmedChannel = channel.replace("#", "");
+
+  if (
+    channels[trimmedChannel]?.features.includes("banPoli") &&
+    isBanPoli(message)
+  ) {
     const isPoliMod = !!channels[trimmedChannel]?.isPoliMod;
     if (!isPoliMod) {
       const isBanned = await banPoli(trimmedChannel);
