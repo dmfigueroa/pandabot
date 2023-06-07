@@ -8,9 +8,10 @@ import { hasAllText } from "./utils.mjs";
  */
 export const isBanPoli = (message) => {
   return (
-    hasAllText(message, ["ban", "poli"]) ||
-    hasAllText(message, ["pan", "boli"]) ||
-    hasAllText(message, ["duerman a poli"])
+    (hasAllText(message, ["ban", "poli"]) ||
+      hasAllText(message, ["pan", "boli"]) ||
+      hasAllText(message, ["duerman a poli"])) &&
+    !hasAllText(message, ["dio", "ban", "poli"])
   );
 };
 

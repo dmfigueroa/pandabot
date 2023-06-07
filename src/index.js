@@ -58,6 +58,9 @@ console.log("Bot is running");
 client.on("message", async (channel, tags, message, self) => {
   const trimmedChannel = channel.replace("#", "");
   if (self || isExcluded(tags.username)) return;
+  if (message.toLowerCase() === "ping") {
+    client.say(channel, "pong");
+  }
   if (
     channels[trimmedChannel]?.features.includes("cualPanda") &&
     saysPanda(message)

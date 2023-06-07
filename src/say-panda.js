@@ -6,7 +6,10 @@ import { hasAllText } from "./utils.mjs";
  * @returns {boolean} - True if the message contains "panda" or "pandita", false otherwise.
  */
 export const saysPanda = (message) => {
-  if (hasAllText(message, ["cual panda", "cuál panda"])) {
+  if (
+    hasAllText(message, ["cual panda"]) ||
+    hasAllText(message, ["cuál panda"])
+  ) {
     return false;
   }
 
