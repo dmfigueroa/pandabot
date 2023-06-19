@@ -38,6 +38,11 @@ export const channels = {
     broadcasterId: "12823826",
     features: ["banPoli"],
   },
+  moonyvt: {
+    isPoliMod: false,
+    broadcasterId: "908667217",
+    features: ["banPoli"],
+  },
 };
 
 const client = new Client({
