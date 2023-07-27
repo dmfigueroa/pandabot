@@ -43,6 +43,11 @@ export const channels = {
     broadcasterId: "908667217",
     features: ["banPoli"],
   },
+  niikasauria: {
+    isPoliMod: false,
+    broadcasterId: 165821521,
+    features: ["banPoli"],
+  },
 };
 
 const client = new Client({
