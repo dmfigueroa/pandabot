@@ -1,63 +1,36 @@
 import { Client } from "tmi.js";
+import channels from "../channels.json";
 import { banPoli, isBanPoli } from "./ban-poli";
 import { getToken } from "./get-token";
 import { saysPanda } from "./say-panda";
 import app, { port, sigedInEmmiter } from "./server";
+import { isExcluded } from "./utils";
 
 console.log("Bot is starting");
 
 console.log("Starting Credentials server");
-await new Promise((resolve) => {
-  app.listen(Number(process.env.PORT) ?? port, "0.0.0.0", 0, async () => {
-    console.log("Credentials server is running");
-    if (!(await getToken())) {
-      sigedInEmmiter.once("signed-in", async () => {
-        resolve(null);
-      });
-    }
-    resolve(null);
+await new Promise(async (resolve) => {
+  Bun.serve({
+    port: Number(process.env.PORT) ?? port,
+    fetch: app.fetch,
   });
-});
+  console.log("Credentials server is running");
+  if (!(await getToken()))
+    sigedInEmmiter.once("signed-in", () => resolve(null));
 
-export const channels = {
-  mikiimoonlight: {
-    isPoliMod: false,
-    broadcasterId: "808750879",
-    features: ["cualPanda", "banPoli"],
-  },
-  soywarmon: {
-    broadcasterId: "54643022",
-    features: ["cualPanda", "banPoli"],
-  },
-  cymaniatico: {
-    broadcasterId: "12823826",
-    features: ["banPoli"],
-  },
-  moonyvt: {
-    broadcasterId: "908667217",
-    features: ["banPoli"],
-  },
-  niikasauria: {
-    broadcasterId: 165821521,
-    features: ["banPoli"],
-  },
-};
+  resolve(null);
+});
 
 const client = new Client({
   channels: Object.keys(channels),
-  connection: {
-    reconnect: true,
-    secure: true,
-  },
+  connection: { reconnect: true, secure: true },
   identity: {
-    username: "soywarmon",
+    username: process.env.MODERATOR_USERNAME,
     password: getToken,
   },
 });
 
 console.log("API Client is starting");
-
-const exclude = ["streamelements"];
 
 client.connect().catch(console.error);
 
@@ -83,17 +56,7 @@ client.on("message", async (channel, tags, message, self) => {
     const isPoliMod = !!channels[trimmedChannel]?.isPoliMod;
     if (!isPoliMod) {
       const isBanned = await banPoli(trimmedChannel);
-      if (isBanned) {
-        client.say(channel, `@${tags.username} le dio Ban a Poli`);
-      }
+      if (isBanned) client.say(channel, `@${tags.username} le dio Ban a Poli`);
     }
   }
 });
-
-const isExcluded = (username: string | undefined): boolean => {
-  if (!username) {
-    return false;
-  }
-
-  return exclude.includes(username.toLowerCase());
-};

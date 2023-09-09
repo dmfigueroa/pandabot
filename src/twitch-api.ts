@@ -1,6 +1,5 @@
-
 import { getToken } from "./get-token";
-import { channels } from "./index";
+import channels from "../channels.json";
 
 export type TwitchUser = {
   id: string;
@@ -15,7 +14,6 @@ export type TwitchUser = {
   email: string;
   created_at: string;
 };
-
 
 const TWITCH_API = "https://api.twitch.tv/helix";
 
@@ -38,14 +36,21 @@ export const getUser = async (username: string): Promise<TwitchUser | null> => {
   return data[0];
 };
 
-export const banUser = async (channel: string, userId: string, duration: number | undefined, reason: string | undefined): Promise<boolean> => {
+export const banUser = async (
+  channel: string,
+  userId: string,
+  duration: number | undefined,
+  reason: string | undefined
+): Promise<boolean> => {
   const channelId = channels[channel]?.broadcasterId;
   const headers = new Headers();
   headers.append("Client-ID", process.env.TWITCH_BOT_CLIENT_ID ?? "");
   headers.append("Authorization", `Bearer ${await getToken()}`);
   headers.append("Content-Type", "application/json");
   const response = await fetch(
-    `${TWITCH_API}/moderation/bans?broadcaster_id=${channelId}&moderator_id=${channels["soywarmon"].broadcasterId}`,
+    `${TWITCH_API}/moderation/bans?broadcaster_id=${channelId}&moderator_id=${
+      channels[process.env.MODERATOR_USERNAME as string].broadcasterId
+    }`,
     {
       method: "POST",
       headers,

@@ -2,7 +2,6 @@ import { eq } from "drizzle-orm";
 import db, { access } from "./database";
 import { sigedInEmmiter } from "./server";
 
-
 const hostname = process.env.HOSTNAME_URL;
 
 export const getToken = async () => {
@@ -66,7 +65,11 @@ const refreshTokens = async (refreshToken: string): Promise<string> => {
   return data.access_token;
 };
 
-export const authenticatedFetch = async (url: string, token: string, options: RequestInit & { params: URLSearchParams }): Promise<Response> => {
+export const authenticatedFetch = async (
+  url: string,
+  token: string,
+  options: RequestInit & { params: URLSearchParams }
+): Promise<Response> => {
   const headers = new Headers();
   headers.append("Authorization", `Bearer ${token}`);
   headers.append("Client-ID", process.env.TWITCH_BOT_CLIENT_ID ?? "");
@@ -84,7 +87,11 @@ export async function updateCredentials({
   accesToken,
   refreshToken,
   expires_in: expiresIn,
-}: { accesToken: string; refreshToken: string; expires_in: number; }): Promise<void> {
+}: {
+  accesToken: string;
+  refreshToken: string;
+  expires_in: number;
+}): Promise<void> {
   // Fisrt acces element from db
   const access_credentials = db.select().from(access).all()[0];
 

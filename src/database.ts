@@ -1,8 +1,8 @@
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
-import { drizzle, BunSQLiteDatabase } from 'drizzle-orm/bun-sqlite';
-import { Database } from 'bun:sqlite';
+import { drizzle, BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
+import { Database } from "bun:sqlite";
 
-const sqlite = new Database('sqlite.db');
+const sqlite = new Database("sqlite.db");
 const db: BunSQLiteDatabase = drizzle(sqlite);
 
 export const access = sqliteTable("access", {

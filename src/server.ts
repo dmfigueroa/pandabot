@@ -1,8 +1,8 @@
 import EventEmitter from "events";
-import express from "express";
+import { Hono } from "hono";
 import { updateCredentials } from "./get-token";
 
-const app = express();
+const app = new Hono();
 
 export const sigedInEmmiter = new EventEmitter();
 
@@ -18,7 +18,7 @@ const scopes = [
 const REDIRECT_URI = process.env.HOSTNAME_URL + "/auth/callback";
 
 // Endpoint para redirigir al usuario al autenticador de Twitch
-app.get("/auth/twitch", (_req, res) => {
+app.get("/auth/twitch", (context) => {
   const clientId = process.env.TWITCH_BOT_CLIENT_ID;
 
   const params = new URLSearchParams({
@@ -28,18 +28,20 @@ app.get("/auth/twitch", (_req, res) => {
     scope: scopes.join(" "),
   });
 
-  res.redirect(`https://id.twitch.tv/oauth2/authorize?${params.toString()}`);
+  return context.redirect(
+    `https://id.twitch.tv/oauth2/authorize?${params.toString()}`
+  );
 });
 
 // Endpoint para recibir el token OAuth2
-app.get("/auth/callback", async (req, res) => {
+app.get("/auth/callback", async (context) => {
   const clientId = process.env.TWITCH_BOT_CLIENT_ID;
   const clientSecret = process.env.TWITCH_BOT_CLIENT_SECRET;
-  const code = req.query.code;
+  const code = context.req.query("code");
 
   if (!code || typeof code !== "string") {
-    res.status(400).send("Código de autorización no válido");
-    return;
+    context.status(400);
+    return context.text("Código de autorización no válido");
   }
 
   const params = new URLSearchParams();
@@ -72,12 +74,15 @@ app.get("/auth/callback", async (req, res) => {
     // Aquí puedes hacer lo que desees con el token de acceso y el token de actualización
     // Por ejemplo, puedes almacenarlos en una base de datos o utilizarlos para autenticar al usuario
 
-    res.send("¡Autenticación exitosa! Puedes cerrar esta ventana ahora.");
+    return context.text(
+      "¡Autenticación exitosa! Puedes cerrar esta ventana ahora."
+    );
   } catch (error) {
     console.error("Error al obtener el token OAuth2:", error);
-    res
-      .status(500)
-      .send("Error al obtener el token OAuth2. Por favor, inténtalo de nuevo.");
+    context.status(500);
+    return context.text(
+      "Error al obtener el token OAuth2. Por favor, inténtalo de nuevo."
+    );
   }
 });
 
