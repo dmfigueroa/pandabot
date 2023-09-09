@@ -1,9 +1,7 @@
-import dotenv from "dotenv";
 import { eq } from "drizzle-orm";
-import db, { access } from "./database.js";
-import { sigedInEmmiter } from "./server.js";
+import db, { access } from "./database";
+import { sigedInEmmiter } from "./server";
 
-dotenv.config();
 
 const hostname = process.env.HOSTNAME_URL;
 
@@ -18,11 +16,11 @@ export const getToken = async () => {
     !access_credentials.refresh_token
   ) {
     console.log(`Open ${hostname}/auth/twitch to sign in`);
-    return new Promise((resolve) => {
+    return new Promise<string>((resolve) => {
       sigedInEmmiter.once("signed-in", async () => {
         tokens = db.select().from(access).all();
 
-        resolve(tokens[0].access_token);
+        resolve(tokens[0].access_token as string);
       });
     });
   }
@@ -33,15 +31,10 @@ export const getToken = async () => {
   ) {
     await refreshTokens(access_credentials.refresh_token);
   }
-  return access_credentials.access_token;
+  return access_credentials.access_token as string;
 };
 
-/**
- * Refreshes the access token using the provided refresh token.
- * @param {string} refreshToken - The refresh token to use for refreshing the access token.
- * @returns {Promise<string>} - A promise that resolves with the new access token.
- */
-const refreshTokens = async (refreshToken) => {
+const refreshTokens = async (refreshToken: string): Promise<string> => {
   const clientId = process.env.TWITCH_BOT_CLIENT_ID;
   const clientSecret = process.env.TWITCH_BOT_CLIENT_SECRET;
 
@@ -73,14 +66,7 @@ const refreshTokens = async (refreshToken) => {
   return data.access_token;
 };
 
-/**
- * Sends an authenticated HTTP request to the specified URL using the provided access token.
- * @param {string} url - The URL to send the request to.
- * @param {string} token - The access token to use for authentication.
- * @param {object} options - Additional options to include in the request (e.g. headers, body, etc.).
- * @returns {Promise<Response>} - A promise that resolves with the response from the server.
- */
-export const authenticatedFetch = async (url, token, options) => {
+export const authenticatedFetch = async (url: string, token: string, options: RequestInit & { params: URLSearchParams }): Promise<Response> => {
   const headers = new Headers();
   headers.append("Authorization", `Bearer ${token}`);
   headers.append("Client-ID", process.env.TWITCH_BOT_CLIENT_ID ?? "");
@@ -94,19 +80,11 @@ export const authenticatedFetch = async (url, token, options) => {
   return fetch(url, options);
 };
 
-/**
- * Updates the access and refresh tokens in the database with the provided values.
- * @param {object} credentials - An object containing the new access and refresh tokens, and the expiration time of the access token.
- * @param {string} credentials.accesToken - The new access token.
- * @param {string} credentials.refreshToken - The new refresh token.
- * @param {number} credentials.expires_in - The expiration time of the access token, in seconds.
- * @returns {Promise<void>} - A promise that resolves when the tokens have been updated in the database.
- */
 export async function updateCredentials({
   accesToken,
   refreshToken,
   expires_in: expiresIn,
-}) {
+}: { accesToken: string; refreshToken: string; expires_in: number; }): Promise<void> {
   // Fisrt acces element from db
   const access_credentials = db.select().from(access).all()[0];
 

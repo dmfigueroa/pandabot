@@ -1,5 +1,5 @@
-import { banUser } from "./twitch-api.js";
-import { hasAllText } from "./utils.mjs";
+import { banUser } from "./twitch-api";
+import { hasAllText } from "./utils";
 
 /**
  * Checks if the given text contains a request to ban Polipelon.

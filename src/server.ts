@@ -1,9 +1,7 @@
-import dotenv from "dotenv";
 import EventEmitter from "events";
 import express from "express";
-import { updateCredentials } from "./get-token.mjs";
+import { updateCredentials } from "./get-token";
 
-dotenv.config();
 const app = express();
 
 export const sigedInEmmiter = new EventEmitter();

@@ -1,11 +1,8 @@
-import dotenv from "dotenv";
 import { Client } from "tmi.js";
-import { banPoli, isBanPoli } from "./ban-poli.js";
-import { getToken } from "./get-token.mjs";
-import { saysPanda } from "./say-panda.js";
-import app, { port, sigedInEmmiter } from "./server.js";
-
-dotenv.config();
+import { banPoli, isBanPoli } from "./ban-poli";
+import { getToken } from "./get-token";
+import { saysPanda } from "./say-panda";
+import app, { port, sigedInEmmiter } from "./server";
 
 console.log("Bot is starting");
 
@@ -29,22 +26,18 @@ export const channels = {
     features: ["cualPanda", "banPoli"],
   },
   soywarmon: {
-    isPoliMod: true,
     broadcasterId: "54643022",
     features: ["cualPanda", "banPoli"],
   },
   cymaniatico: {
-    isPoliMod: false,
     broadcasterId: "12823826",
     features: ["banPoli"],
   },
   moonyvt: {
-    isPoliMod: false,
     broadcasterId: "908667217",
     features: ["banPoli"],
   },
   niikasauria: {
-    isPoliMod: false,
     broadcasterId: 165821521,
     features: ["banPoli"],
   },
@@ -97,12 +90,7 @@ client.on("message", async (channel, tags, message, self) => {
   }
 });
 
-/**
- * Checks if a username is excluded from bot commands.
- * @param {string | undefined} username - The username to check.
- * @returns {boolean} - True if the username is excluded, false otherwise.
- */
-const isExcluded = (username) => {
+const isExcluded = (username: string | undefined): boolean => {
   if (!username) {
     return false;
   }
