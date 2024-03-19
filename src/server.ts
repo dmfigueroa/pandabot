@@ -4,7 +4,7 @@ import { updateCredentials } from "./get-token";
 
 const app = new Hono();
 
-export const sigedInEmmiter = new EventEmitter();
+export const signedInEmitter = new EventEmitter();
 
 const scopes = [
   "chat:read",
@@ -66,7 +66,7 @@ app.get("/auth/callback", async (context) => {
     const data = await response.json();
 
     await updateCredentials({
-      accesToken: data.access_token,
+      accessToken: data.access_token,
       refreshToken: data.refresh_token,
       expires_in: data.expires_in,
     });

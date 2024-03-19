@@ -6,7 +6,7 @@
   "scripts": {
     "start": "bun --watch src/index.ts",
     "generate": "drizzle-kit generate:sqlite --out migrations --schema src/database.ts",
-    "migrate": "node ./migrate.ts"
+    "migrate": "bun ./migrate.ts"
   },
   "keywords": [],
   "author": "",

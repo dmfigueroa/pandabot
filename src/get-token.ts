@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import db, { access } from "./database";
-import { sigedInEmmiter } from "./server";
+import { signedInEmitter } from "./server";
 
 const hostname = process.env.HOSTNAME_URL;
 
@@ -16,7 +16,7 @@ export const getToken = async () => {
   ) {
     console.log(`Open ${hostname}/auth/twitch to sign in`);
     return new Promise<string>((resolve) => {
-      sigedInEmmiter.once("signed-in", async () => {
+      signedInEmitter.once("signed-in", async () => {
         tokens = db.select().from(access).all();
 
         resolve(tokens[0].access_token as string);
@@ -57,7 +57,7 @@ const refreshTokens = async (refreshToken: string): Promise<string> => {
   const data = await response.json();
 
   await updateCredentials({
-    accesToken: data.access_token,
+    accessToken: data.access_token,
     refreshToken: data.refresh_token,
     expires_in: data.expires_in,
   });
@@ -84,11 +84,11 @@ export const authenticatedFetch = async (
 };
 
 export async function updateCredentials({
-  accesToken,
+  accessToken,
   refreshToken,
   expires_in: expiresIn,
 }: {
-  accesToken: string;
+  accessToken: string;
   refreshToken: string;
   expires_in: number;
 }): Promise<void> {
@@ -98,7 +98,7 @@ export async function updateCredentials({
   if (!access_credentials) {
     db.insert(access)
       .values({
-        access_token: accesToken,
+        access_token: accessToken,
         refresh_token: refreshToken,
         expires_in: Date.now() + expiresIn * 1000,
       })
@@ -106,7 +106,7 @@ export async function updateCredentials({
   } else {
     db.update(access)
       .set({
-        access_token: accesToken,
+        access_token: accessToken,
         refresh_token: refreshToken,
         expires_in: Date.now() + expiresIn * 1000,
       })
@@ -114,5 +114,5 @@ export async function updateCredentials({
       .run();
   }
 
-  sigedInEmmiter.emit("signed-in");
+  signedInEmitter.emit("signed-in");
 }

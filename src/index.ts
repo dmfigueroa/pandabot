@@ -3,7 +3,7 @@ import channels from "../channels.json";
 import { banPoli, isBanPoli } from "./ban-poli";
 import { getToken } from "./get-token";
 import { saysPanda } from "./say-panda";
-import app, { port, sigedInEmmiter } from "./server";
+import app, { port, signedInEmitter } from "./server";
 import { isExcluded } from "./utils";
 
 console.log("Bot is starting");
@@ -16,7 +16,7 @@ await new Promise(async (resolve) => {
   });
   console.log("Credentials server is running");
   if (!(await getToken()))
-    sigedInEmmiter.once("signed-in", () => resolve(null));
+    signedInEmitter.once("signed-in", () => resolve(null));
 
   resolve(null);
 });

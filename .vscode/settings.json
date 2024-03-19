@@ -9,5 +9,6 @@
       "database": "${workspaceFolder:cual-panda-bot}/sqlite.db"
     }
   ],
-  "js/ts.implicitProjectConfig.checkJs": true
+  "js/ts.implicitProjectConfig.checkJs": true,
+  "cSpell.words": ["poli"]
 }
