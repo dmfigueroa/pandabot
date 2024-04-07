@@ -2,26 +2,36 @@
   "name": "cual-panda-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.ts",
+  "main": "src/index.js",
   "scripts": {
-    "start": "bun --watch src/index.ts",
-    "generate": "drizzle-kit generate:sqlite --out migrations --schema src/database.ts",
-    "migrate": "bun ./migrate.ts"
+    "start": "node src/index.js",
+    "generate": "drizzle-kit generate:sqlite --out migrations --schema src/database/index.js",
+    "migrate": "node ./migrate.js",
+    "lint": "eslint"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "@eslint/eslintrc": "^3.0.2",
+    "@eslint/js": "^9.0.0",
     "@types/better-sqlite3": "^7.6.4",
+    "@types/node": "^20.12.5",
     "@types/tmi.js": "^1.8.3",
-    "bun-types": "^1.0.1",
+    "dotenv": "^16.4.5",
     "drizzle-kit": "^0.19.13",
+    "eslint": "^9.0.0",
+    "globals": "^15.0.0",
     "prettier": "^3.0.3"
   },
   "dependencies": {
+    "@hono/node-server": "^1.9.1",
+    "better-sqlite3": "^9.4.5",
+    "consola": "^3.2.3",
     "drizzle-orm": "^0.28.6",
     "hono": "^3.5.8",
-    "tmi.js": "^1.8.5"
+    "tmi.js": "^1.8.5",
+    "zod": "^3.22.4"
   }
 }

@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "1d5b8073-883c-40bd-8dcb-a6d913cce95f",
+  "id": "ba975db1-3f5a-42e8-9b6c-210ac70d51c2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "access": {
@@ -18,13 +18,15 @@
           "name": "access_token",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "refresh_token": {
           "name": "refresh_token",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "expires_in": {
           "name": "expires_in",
@@ -36,7 +38,8 @@
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {}
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     }
   },
   "enums": {},

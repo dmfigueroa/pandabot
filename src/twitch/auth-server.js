@@ -1,6 +1,8 @@
 import EventEmitter from "events";
 import { Hono } from "hono";
-import { updateCredentials } from "./get-token";
+import { TwitchTokenResponseSchema, updateCredentials } from "./get-token.js";
+import env from "../utils/load-envs.js";
+import consola from "consola";
 
 const app = new Hono();
 
@@ -15,11 +17,11 @@ const scopes = [
   "user:read:email",
 ];
 
-const REDIRECT_URI = process.env.HOSTNAME_URL + "/auth/callback";
+const REDIRECT_URI = env.HOSTNAME_URL + "/auth/callback";
 
-// Endpoint para redirigir al usuario al autenticador de Twitch
+// Endpoint to redirect the user to the Twitch auth page
 app.get("/auth/twitch", (context) => {
-  const clientId = process.env.TWITCH_BOT_CLIENT_ID;
+  const clientId = env.TWITCH_BOT_CLIENT_ID;
 
   const params = new URLSearchParams({
     client_id: clientId || "",
@@ -35,8 +37,6 @@ app.get("/auth/twitch", (context) => {
 
 // Endpoint para recibir el token OAuth2
 app.get("/auth/callback", async (context) => {
-  const clientId = process.env.TWITCH_BOT_CLIENT_ID;
-  const clientSecret = process.env.TWITCH_BOT_CLIENT_SECRET;
   const code = context.req.query("code");
 
   if (!code || typeof code !== "string") {
@@ -45,8 +45,8 @@ app.get("/auth/callback", async (context) => {
   }
 
   const params = new URLSearchParams();
-  params.append("client_id", clientId ?? "");
-  params.append("client_secret", clientSecret ?? "");
+  params.append("client_id", env.TWITCH_BOT_CLIENT_ID);
+  params.append("client_secret", env.TWITCH_BOT_CLIENT_SECRET);
   params.append("code", code);
   params.append("grant_type", "authorization_code");
   params.append("redirect_uri", REDIRECT_URI);
@@ -63,22 +63,19 @@ app.get("/auth/callback", async (context) => {
       throw new Error("No se pudo obtener el token OAuth2");
     }
 
-    const data = await response.json();
+    const data = TwitchTokenResponseSchema.parse(await response.json());
 
     await updateCredentials({
-      accessToken: data.access_token,
-      refreshToken: data.refresh_token,
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
       expires_in: data.expires_in,
     });
-
-    // Aquí puedes hacer lo que desees con el token de acceso y el token de actualización
-    // Por ejemplo, puedes almacenarlos en una base de datos o utilizarlos para autenticar al usuario
 
     return context.text(
       "¡Autenticación exitosa! Puedes cerrar esta ventana ahora."
     );
   } catch (error) {
-    console.error("Error al obtener el token OAuth2:", error);
+    consola.error("There was an error obtaining the OAuth2 token:", error);
     context.status(500);
     return context.text(
       "Error al obtener el token OAuth2. Por favor, inténtalo de nuevo."
