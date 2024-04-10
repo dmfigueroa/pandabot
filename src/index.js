@@ -15,21 +15,12 @@ consola.info("Starting Credentials server");
 serve({ port: Number(env.PORT) || port, fetch: app.fetch });
 consola.info("Credentials server is running");
 
-const token = await getToken();
-
-if (!token) {
-  consola.error("There was an unexpected error obtaining a token");
-  process.exit();
-} else {
-  consola.success("Twitch credentials have been loaded successfully");
-}
-
 const client = new Client({
   channels: Object.keys(channels),
   connection: { reconnect: true, secure: true },
   identity: {
     username: env.MODERATOR_USERNAME,
-    password: token,
+    password: getToken,
   },
 });
 
