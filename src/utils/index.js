@@ -1,8 +1,3 @@
-import { z } from "zod";
-import importValidatedJson from "./import-json.js";
-
-const exclude = await importValidatedJson("exclude.json", z.array(z.string()));
-
 /**
  * Evaluates if a text contains any of the strings on the words array
  *
@@ -16,10 +11,11 @@ export const hasAllText = (text, words) => {
 /**
  * Validates if a username is listed in the exclude file
  * @param {string} username
+ * @param {Array<string>=} exclude A list of excluded channels
  * @returns {boolean}
  */
-export const isExcluded = (username) => {
+export const isExcluded = (username, exclude) => {
   if (!username) return false;
 
-  return exclude.includes(username.toLowerCase());
+  return exclude?.includes(username.toLowerCase()) || false;
 };

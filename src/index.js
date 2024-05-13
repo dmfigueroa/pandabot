@@ -31,26 +31,21 @@ client.connect().catch(consola.error);
 consola.info("Bot is running");
 
 client.on("message", async (channel, tags, message, self) => {
+  if (self) return;
+  if (!tags.username) return;
   const trimmedChannel = channel.replace("#", "");
-  if (self || !tags.username || isExcluded(tags.username)) return;
+  const channelInfo = channels[trimmedChannel];
+  if (!channelInfo) return;
+  if (isExcluded(tags.username, channelInfo.exclude)) return;
   if (message.toLowerCase() === "ping") {
     client.say(channel, "pong");
   }
-  if (
-    channels[trimmedChannel]?.features.includes("cualPanda") &&
-    saysPanda(message)
-  ) {
+  if (channelInfo.features.includes("cualPanda") && saysPanda(message)) {
     client.say(channel, `@${tags.username} Cuál Panda?`);
   }
 
-  if (
-    channels[trimmedChannel]?.features.includes("banPoli") &&
-    isBanPoli(message)
-  ) {
-    const isPoliMod = !!channels[trimmedChannel]?.isPoliMod;
-    if (!isPoliMod) {
-      const isBanned = await banPoli(trimmedChannel);
-      if (isBanned) client.say(channel, `@${tags.username} le dio Ban a Poli`);
-    }
+  if (channelInfo.features.includes("banPoli") && isBanPoli(message)) {
+    const isBanned = await banPoli(trimmedChannel);
+    if (isBanned) client.say(channel, `@${tags.username} le dio Ban a Poli`);
   }
 });

@@ -34,7 +34,8 @@ This file provides the information of all the channels where the bot runs and th
 {
   "${channel}": {
     "broadcasterId": "21312312312",
-    "features": ["feature1", "feature2"]
+    "features": ["feature1", "feature2"],
+    "exclude": ["streamelements", "nightbot", "channel1", "channel2"]
   }
 }
 ```
@@ -45,16 +46,6 @@ This file provides the information of all the channels where the bot runs and th
 - `banPoli`: This feature timeouts the user [Polipelon](https://www.twitch.tv/polipelon) for 1 second each time someone sends the "magic words" (see implementation)
 
 > _Like I said this is just a joke and I have permission on every channel I add these features_
-
-#### 2. Exclude `exclude.json`:
-
-This file provides the information of all the users that the bot ignores on an incoming message.
-
-##### Structure
-
-```json
-["streamelements", "nightbot", "channel1", "channel2"]
-```
 
 ### How to start
 

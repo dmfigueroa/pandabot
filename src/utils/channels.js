@@ -7,6 +7,7 @@ const channelsSchema = z.record(
     features: z.array(z.enum(["cualPanda", "banPoli"])),
     isPoliMod: z.boolean().optional(),
     broadcasterId: z.string(),
+    exclude: z.array(z.string()).optional()
   })
 );
 
