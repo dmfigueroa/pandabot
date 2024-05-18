@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
+    "dev": "node --watch src/index.js",
     "start": "node -r ./src/tracing.cjs src/index.js",
     "generate": "drizzle-kit generate:sqlite --out migrations --schema src/database/index.js",
     "migrate": "node ./migrate.js",
