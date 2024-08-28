@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "dev": "node --watch src/index.js",
-    "start": "node -r ./src/tracing.cjs src/index.js",
+    "start": "node src/index.js",
     "generate": "drizzle-kit generate:sqlite --out migrations --schema src/database/index.js",
     "migrate": "node ./migrate.js",
     "lint": "eslint"
@@ -27,9 +27,7 @@
     "prettier": "^3.0.3"
   },
   "dependencies": {
-    "@baselime/node-opentelemetry": "^0.5.8",
     "@hono/node-server": "^1.11.0",
-    "@opentelemetry/auto-instrumentations-node": "^0.46.0",
     "better-sqlite3": "^9.4.5",
     "consola": "^3.2.3",
     "drizzle-orm": "^0.28.6",
