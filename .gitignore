@@ -5,3 +5,4 @@ dist
 sqlite.db
 channels.json
 exclude.json
+.kamal/secrets
