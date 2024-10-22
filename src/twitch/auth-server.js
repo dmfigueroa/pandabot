@@ -6,6 +6,8 @@ import consola from "consola";
 
 const app = new Hono();
 
+app.get("/up", (c) => c.text("Up"));
+
 export const signedInEmitter = new EventEmitter();
 
 const scopes = [
@@ -30,9 +32,7 @@ app.get("/auth/twitch", (context) => {
     scope: scopes.join(" "),
   });
 
-  return context.redirect(
-    `https://id.twitch.tv/oauth2/authorize?${params.toString()}`
-  );
+  return context.redirect(`https://id.twitch.tv/oauth2/authorize?${params.toString()}`);
 });
 
 // Endpoint para recibir el token OAuth2
@@ -52,12 +52,9 @@ app.get("/auth/callback", async (context) => {
   params.append("redirect_uri", REDIRECT_URI);
 
   try {
-    const response = await fetch(
-      `https://id.twitch.tv/oauth2/token?${params.toString()}`,
-      {
-        method: "POST",
-      }
-    );
+    const response = await fetch(`https://id.twitch.tv/oauth2/token?${params.toString()}`, {
+      method: "POST",
+    });
 
     if (!response.ok) {
       throw new Error("No se pudo obtener el token OAuth2");
@@ -71,15 +68,11 @@ app.get("/auth/callback", async (context) => {
       expires_in: data.expires_in,
     });
 
-    return context.text(
-      "¡Autenticación exitosa! Puedes cerrar esta ventana ahora."
-    );
+    return context.text("¡Autenticación exitosa! Puedes cerrar esta ventana ahora.");
   } catch (error) {
     consola.error("There was an error obtaining the OAuth2 token:", error);
     context.status(500);
-    return context.text(
-      "Error al obtener el token OAuth2. Por favor, inténtalo de nuevo."
-    );
+    return context.text("Error al obtener el token OAuth2. Por favor, inténtalo de nuevo.");
   }
 });
 
