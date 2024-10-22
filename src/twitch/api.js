@@ -27,7 +27,6 @@ export const getUser = async (username) => {
     return null;
   }
 
-  // @ts-expect-error
   const { data } = await response.json();
 
   return data[0];
@@ -51,8 +50,7 @@ export const banUser = async (channel, userId, duration, reason) => {
 
   const moderatorUserId = channels[env.MODERATOR_USERNAME].broadcasterId;
 
-  if (!moderatorUserId)
-    throw new Error("You need to add the moderator to the channels list");
+  if (!moderatorUserId) throw new Error("You need to add the moderator to the channels list");
 
   const response = await fetch(
     `${TWITCH_API}/moderation/bans?broadcaster_id=${channelId}&moderator_id=${moderatorUserId}`,
@@ -66,7 +64,7 @@ export const banUser = async (channel, userId, duration, reason) => {
           ...(reason ? { reason } : {}),
         },
       }),
-    }
+    },
   );
 
   return response.ok;
