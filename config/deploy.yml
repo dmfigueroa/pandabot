@@ -35,6 +35,7 @@ registry:
 # Configure builder setup.
 builder:
   arch: amd64
+  context: . # Necessary to include files outside of the git commit
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 #
