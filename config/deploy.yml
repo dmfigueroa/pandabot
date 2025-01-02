@@ -7,7 +7,7 @@ image: dfigueroa/pandabot
 # Deploy to these servers.
 servers:
   web:
-    - ryumi
+    - niika
   # job:
   #   hosts:
   #     - 192.168.0.1
@@ -42,6 +42,7 @@ builder:
 env:
   secret:
     - MODERATOR_USERNAME
+    - MODERATOR_ID
     - TWITCH_BOT_CLIENT_ID
     - TWITCH_BOT_CLIENT_SECRET
     - HOSTNAME_URL
@@ -50,8 +51,8 @@ env:
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
 # "bin/kamal logs -r job" will tail logs from the first server in the job section.
 #
-# aliases:
-#   shell: app exec --interactive --reuse "bash"
+aliases:
+  shell: app exec --interactive --reuse "sh"
 
 # Use a different ssh user than root
 #
