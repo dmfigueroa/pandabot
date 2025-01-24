@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
-    "better-sqlite3": "^11.8.0",
+    "better-sqlite3": "^11.8.1",
     "consola": "^3.4.0",
     "drizzle-orm": "^0.38.3",
     "hono": "^4.6.18",
